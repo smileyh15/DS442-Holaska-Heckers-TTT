@@ -21,19 +21,22 @@ class Engine:
             return self.evaluate_board(board, depth), None
 
         if ai_turn:
-            max_eval = float('-inf')
+            # Forces the AI to pick the move with the worst valuation if they were trying to win standard tic-tac-toe
+            # Essentially makes agent play as sub-optimal as possible
+            # Also assumes that the foe will also be playing sub-optimally
+            min_eval = float('inf')
             best_move = None
             for move in available_moves:
                 board.push(move, self.ai)
                 eval_ = self.minimax(board, False, depth + 1, alpha, beta)[0]
                 board.undo(move)
-                max_eval = max(max_eval, eval_)
-                if max_eval == eval_:
+                min_eval = min(min_eval, eval_)
+                if min_eval == eval_:
                     best_move = move
-                alpha = max(alpha, max_eval)
+                alpha = min(alpha, min_eval)
                 if alpha > beta:
-                    return max_eval, best_move
-            return max_eval, best_move
+                    return min_eval, best_move
+            return min_eval, best_move
         else:
             min_eval = float('inf')
             best_move = None
